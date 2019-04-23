@@ -6,10 +6,10 @@ import java.awt.event.ActionListener;
 public class MyActionListener implements ActionListener {
 
     private char signOperator = '0';
-    private float argument = 0;
+    private int argument = 0;
     private double result = 0;
     private boolean isPreviousNumeric = false;
-    String text="";
+    String text = "";
 
     private void setDefaults() {
         signOperator = '0';
@@ -26,7 +26,7 @@ public class MyActionListener implements ActionListener {
         System.out.println(isPreviousNumeric);
     }
 
-    private void displayText(String text){
+    private void displayText(String text) {
         Calculator.textField.setText(text);
     }
 
@@ -55,7 +55,7 @@ public class MyActionListener implements ActionListener {
         char pressed = arg0.getActionCommand().charAt(0);
 
         if (pressed != '=' && pressed != 'C') {
-            text=text+String.valueOf(pressed);
+            text = text + String.valueOf(pressed);
             displayText(text);
         }
 
@@ -79,31 +79,32 @@ public class MyActionListener implements ActionListener {
             case 'C':
                 setDefaults();
                 System.out.println();
-                text="";
+                text = "";
                 displayText(String.valueOf(text));
                 break;
             case '=':
                 checkSignOperator();
                 settingsSignOperators(pressed);
+
                 displayText(String.valueOf(result));
                 System.out.print("\n" + result);
-                text=String.valueOf(result);
+                text = String.valueOf(result);
                 break;
 
             default: // for digits
 
                 if (signOperator == '=') {
-                    argument = Integer.parseInt(String.valueOf(pressed));
-                    result=argument;
-                    //text="";
-                    //displayText(text);
-                    displayText(String.valueOf(result));
-
+                    if (argument != 0) {
+                        argument = Integer.parseInt(String.valueOf(argument) + String.valueOf(pressed));
+                    } else {
+                        argument = Integer.parseInt(String.valueOf(pressed));
+                    }
+                    result = argument;
+                    text = String.valueOf((int) result);
+                    displayText(text);
                 } else if (argument != 0) {
                     argument = Integer.parseInt(String.valueOf(argument) + String.valueOf(pressed));
-                    result=argument;
-
-                    displayText(String.valueOf(result));
+                    displayText(text);
 
                 } else {
 
@@ -113,10 +114,10 @@ public class MyActionListener implements ActionListener {
                             throw new DivisionByZeroException("\nDivision by zero, cannot perform this action.");
                     } catch (DivisionByZeroException de) {
                         argument = 1;
-                        signOperator='=';
+                        signOperator = '=';
                         System.err.println(de.getText());
                         displayText(String.valueOf(result));
-
+                        argument = 0;
                     }
 
                     isPreviousNumeric = true;
