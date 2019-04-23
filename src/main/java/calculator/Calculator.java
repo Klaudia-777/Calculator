@@ -3,7 +3,6 @@ package calculator;
 import javax.swing.*;
 import java.awt.*;
 
-
 public class Calculator {
     private static final MyActionListener myActionListener = new MyActionListener();
     static JTextField textField = new JTextField();
