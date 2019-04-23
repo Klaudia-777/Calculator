@@ -3,6 +3,9 @@ package calculator;
 import javax.swing.*;
 import java.awt.*;
 
+import static javax.swing.text.html.HTML.Tag.FONT;
+
+
 public class Calculator {
     private static final MyActionListener myActionListener = new MyActionListener();
     static JTextField textField = new JTextField();
@@ -49,8 +52,8 @@ public class Calculator {
         JFrame jf = new JFrame("Calculator");
         textField.addActionListener(myActionListener);
 
-        // textField.setText("0");
-        GridLayout gridLayout = new GridLayout(4, 4);
+       // textField.setText("0");
+        GridLayout gridLayout = new GridLayout(4,4);
         JPanel jPanel = new JPanel();
 
         jPanel.setLayout(gridLayout);

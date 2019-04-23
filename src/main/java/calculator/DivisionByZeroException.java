@@ -1,12 +1,13 @@
 package calculator;
 
-class DivisionByZeroException extends RuntimeException {
+public class DivisionByZeroException extends RuntimeException {
     private String text;
 
-    DivisionByZeroException(String text) {
+    public DivisionByZeroException(String text) {
         this.text = text;
     }
-    String getText() {
+
+    public String getText() {
         return text;
     }
 }
