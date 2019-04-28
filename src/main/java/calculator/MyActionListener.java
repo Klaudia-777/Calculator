@@ -10,6 +10,7 @@ public class MyActionListener implements ActionListener {
     private double result = 0;
     private boolean isPreviousNumeric = false;
     String text = "";
+    boolean checkPressed=false; //checks if last displayed character is digit
 
     private void setDefaults() {
         signOperator = '0';
@@ -55,7 +56,20 @@ public class MyActionListener implements ActionListener {
         char pressed = arg0.getActionCommand().charAt(0);
 
         if (pressed != '=' && pressed != 'C') {
-            text = text + String.valueOf(pressed);
+            if(Character.isDigit(pressed)) {
+                text+=String.valueOf(pressed);
+                checkPressed=true;
+            }
+            else{
+                if(checkPressed) {
+                    text+=String.valueOf(pressed);
+                    checkPressed=false;
+                }
+                else {
+                    text=text.substring(0,text.length()-1)+String.valueOf(pressed);
+                    checkPressed=false;
+                }
+            }
             displayText(text);
         }
 
