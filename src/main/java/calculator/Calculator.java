@@ -49,7 +49,9 @@ public class Calculator {
         JFrame jf = new JFrame("Calculator");
         textField.addActionListener(myActionListener);
 
-        // textField.setText("0");
+        Font bigFont = textField.getFont().deriveFont(Font.PLAIN, 28f);
+        textField.setFont(bigFont);
+
         GridLayout gridLayout = new GridLayout(4, 4);
         JPanel jPanel = new JPanel();
 
@@ -63,6 +65,12 @@ public class Calculator {
         jf.pack();
         jf.setVisible(true);
         jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        jf.setLocation(dim.width/2-jf.getSize().width/2, dim.height/2-jf.getSize().height/2);
+        jf.setSize(300,250);
+        jf.setResizable(false);
     }
 
 
