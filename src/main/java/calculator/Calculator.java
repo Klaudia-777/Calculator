@@ -6,9 +6,9 @@ import java.awt.*;
 public class Calculator {
     private static final MyActionListener myActionListener = new MyActionListener();
     static JTextField textField = new JTextField();
+    static final JButton[][] jButtonTable = new JButton[4][4];
 
-    public static JButton[][] setButtons() {
-        JButton[][] jButtonTable = new JButton[4][4];
+    private static void setButtons() {
 
         jButtonTable[0][0] = new JButton("1");
         jButtonTable[0][1] = new JButton("2");
@@ -30,12 +30,10 @@ public class Calculator {
         jButtonTable[3][2] = new JButton("C");
         jButtonTable[3][3] = new JButton("/");
 
-        return jButtonTable;
     }
 
-
-    public static void setPane(Container pane) {
-        JButton[][] jButtonTable = setButtons();
+    private static void setPane(Container pane) {
+        setButtons();
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 jButtonTable[i][j].addActionListener(myActionListener);
@@ -44,13 +42,15 @@ public class Calculator {
         }
     }
 
+    private static void createAndShowGUI() {                                        //  init view
 
-    public static void createAndShowGUI() {
         JFrame jf = new JFrame("Calculator");
         textField.addActionListener(myActionListener);
 
         Font bigFont = textField.getFont().deriveFont(Font.PLAIN, 28f);
         textField.setFont(bigFont);
+        textField.setHorizontalAlignment(JTextField.RIGHT);
+        textField.setText("0");
 
         GridLayout gridLayout = new GridLayout(4, 4);
         JPanel jPanel = new JPanel();
@@ -71,17 +71,16 @@ public class Calculator {
         jf.setLocation(dim.width/2-jf.getSize().width/2, dim.height/2-jf.getSize().height/2);
         jf.setSize(300,250);
         jf.setResizable(false);
+
     }
 
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args) {                                        //    main function of the app
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 createAndShowGUI();
             }
         });
-
     }
 
 

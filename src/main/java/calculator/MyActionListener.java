@@ -2,144 +2,209 @@ package calculator;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 
 public class MyActionListener implements ActionListener {
 
-    private char signOperator = '0';
-    private int argument = 0;
-    private double result = 0;
-    private boolean isPreviousNumeric = false;
-    String text = "";
-    boolean checkPressed=false; //checks if last displayed character is digit
+    DecimalFormat df = new DecimalFormat("####0.0000");
 
-    private void setDefaults() {
+    private char signOperator = '0';
+    private char rememberedChar = '0';
+
+    private int argument = 0;
+    private int rememberedArgument = 0;
+
+    private double result = 0;
+    private double rememberedResult = 0;
+
+    private String text = "";
+    private boolean isPreviousNumeric = true;
+
+    private void setDefaults() {                        // clears calculators settings
+        text = "0";
+        isPreviousNumeric = false;
+        displayText(text);
         signOperator = '0';
+        rememberedChar = '0';
         argument = 0;
         result = 0;
-        isPreviousNumeric = false;
-
     }
 
-    private void printParameters() {
-        System.out.println(signOperator);
-        System.out.println("res " + result);
-        System.out.println("arg " + argument);
-        System.out.println(isPreviousNumeric);
+    private boolean checkIfDouble(double result) {      // checks if the current result value is double (true) or int (false)
+        return result - (int) result != 0;
     }
 
-    private void displayText(String text) {
+    private void changeTextResult(double result) {      // if result is double sets text as double format number, if not - displays int format
+        if (checkIfDouble(result)) {
+            text = String.valueOf(df.format(result));
+        } else {
+            text = String.valueOf((int) result);
+        }
+    }
+
+    private void displayText(String text) {             // displays result on calculator screen
         Calculator.textField.setText(text);
     }
 
-    private void checkSignOperator() {
-        if (signOperator == '0') result = argument;
-        else if (signOperator == '+') result += argument;
-        else if (signOperator == '-') result -= argument;
-        else if (signOperator == '*') result *= argument;
-        else if (signOperator == '/') result /= argument;
+    private void disableOperationButtons() {
+        for (int i = 0; i < 4; i++) {
+            Calculator.jButtonTable[i][3].setEnabled(false);
+        }
     }
 
-    private void concat() {
+    private void enableOperationButtons() {
+        for (int i = 0; i < 4; i++) {
+            Calculator.jButtonTable[i][3].setEnabled(true);
+        }
+    }
+
+    private void equalsRepeated(char rememberedChar) {  // repeats last operation when '=' pressed repeatedly
+        if (isPreviousNumeric)
+            switch (rememberedChar) {
+                case '+':
+                    result += rememberedArgument;
+                    break;
+                case '-':
+                    result -= rememberedArgument;
+                    break;
+                case '*':
+                    result *= rememberedArgument;
+                    break;
+                case '/':
+                    result /= rememberedArgument;
+                    break;
+            }
+    }
+
+    private void concat(char pressed) {                 // executed every time when operator sign is changed in a row
+        isPreviousNumeric = false;
+        rememberedResult = result;
+        if (pressed != '=')
+            rememberedChar = pressed;
         if (signOperator != '=') {
             checkSignOperator();
         }
     }
 
-    private void settingsSignOperators(char pressed) {
+    private void checkSignOperator() {                  // performs proper action depending on operator sign
+        if (signOperator == '0') result = argument;
+        else if (signOperator == '+') {
+            result = rememberedResult;
+            result += argument;
+            changeTextResult(result);
+            displayText(text);
+        } else if (signOperator == '-') {
+            result = rememberedResult;
+            result -= argument;
+            changeTextResult(result);
+            displayText(text);
+        } else if (signOperator == '*') {
+            result = rememberedResult;
+            if (argument != 0)
+                result *= argument;
+            changeTextResult(result);
+            displayText(text);
+        } else if (signOperator == '/') {
+            result = rememberedResult;
+            if (argument != 0)
+                result /= argument;
+            changeTextResult(result);
+            displayText(text);
+        } else if (signOperator == '=') {
+            equalsRepeated(rememberedChar);
+        }
+    }
+
+    private void settingsSignOperators(char pressed) {     // executed every time when operator button is pressed, resets argument value
         signOperator = pressed;
-        isPreviousNumeric = false;
         argument = 0;
     }
 
-    public void actionPerformed(ActionEvent arg0) {
-
+    public void actionPerformed(ActionEvent arg0) {        // main handling events function body
         char pressed = arg0.getActionCommand().charAt(0);
-
-        if (pressed != '=' && pressed != 'C') {
-            if(Character.isDigit(pressed)) {
-                text+=String.valueOf(pressed);
-                checkPressed=true;
+        enableOperationButtons();
+        if (Character.isDigit(pressed)) {
+            if (!text.equals("0")) {
+                text += String.valueOf(pressed);
+                displayText(text);
+            } else {
+                text = String.valueOf(pressed);
+                displayText(text);
             }
-            else{
-                if(checkPressed) {
-                    text+=String.valueOf(pressed);
-                    checkPressed=false;
-                }
-                else {
-                    text=text.substring(0,text.length()-1)+String.valueOf(pressed);
-                    checkPressed=false;
-                }
-            }
-            displayText(text);
         }
-
         switch (pressed) {
             case '+':
-                concat();
+                concat(pressed);
+                text = "";
                 settingsSignOperators(pressed);
                 break;
             case '-':
-                concat();
+                concat(pressed);
+                text = "";
                 settingsSignOperators(pressed);
                 break;
             case '*':
-                concat();
+                concat(pressed);
+                text = "";
                 settingsSignOperators(pressed);
                 break;
             case '/':
-                concat();
+                concat(pressed);
+                text = "";
                 settingsSignOperators(pressed);
                 break;
             case 'C':
                 setDefaults();
-                System.out.println();
-                text = "";
-                displayText(String.valueOf(text));
                 break;
             case '=':
                 checkSignOperator();
                 settingsSignOperators(pressed);
-
-                displayText(String.valueOf(result));
-                System.out.print("\n" + result);
-                text = String.valueOf(result);
+                changeTextResult(result);
+                displayText(text);
                 break;
 
             default: // for digits
-
+                isPreviousNumeric = true;
+                rememberedResult = result;
                 if (signOperator == '=') {
                     if (argument != 0) {
                         argument = Integer.parseInt(String.valueOf(argument) + String.valueOf(pressed));
+
                     } else {
                         argument = Integer.parseInt(String.valueOf(pressed));
                     }
+
+                    rememberedArgument = argument;
                     result = argument;
                     text = String.valueOf((int) result);
                     displayText(text);
                 } else if (argument != 0) {
                     argument = Integer.parseInt(String.valueOf(argument) + String.valueOf(pressed));
+                    rememberedArgument = argument;
                     displayText(text);
 
                 } else {
 
                     try {
                         argument = Integer.parseInt(String.valueOf(pressed));
-                        if (argument == 0 && signOperator == '/')
-                            throw new DivisionByZeroException("\nDivision by zero, cannot perform this action.");
+                        if (argument == 0 && signOperator == '/') {
+                            if (result == 0) throw new UnspecifiedValueException("Unspecified Value.");
+                            throw new DivisionByZeroException("Division by zero!");
+                        }
+                    } catch (UnspecifiedValueException ue) {
+                        disableOperationButtons();
+                        setDefaults();
+                        displayText(ue.getText());
+                        text = "";
                     } catch (DivisionByZeroException de) {
-                        argument = 1;
-                        signOperator = '=';
-                        System.err.println(de.getText());
-                        displayText(String.valueOf(result));
-                        argument = 0;
+                        disableOperationButtons();
+                        setDefaults();
+                        displayText(de.getText());
+                        text = "";
                     }
-
-                    isPreviousNumeric = true;
-
+                    rememberedArgument = argument;
                 }
-
                 break;
-
         }
     }
 
