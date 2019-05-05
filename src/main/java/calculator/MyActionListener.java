@@ -1,13 +1,17 @@
 package calculator;
 
+import lombok.Getter;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
+@Getter
 public class MyActionListener implements ActionListener {
 
     DecimalFormat df = new DecimalFormat("####0.0000");
 
+    private Calculator calculator;
     private char signOperator = '0';
     private char rememberedChar = '0';
 
@@ -18,10 +22,16 @@ public class MyActionListener implements ActionListener {
     private double rememberedResult = 0;
 
     private String text = "";
+    private String rememberedText = "";
     private boolean isPreviousNumeric = true;
+
+    public MyActionListener(Calculator calculator) {
+        this.calculator = calculator;
+    }
 
     private void setDefaults() {                        // clears calculators settings
         text = "0";
+        rememberedText = "";
         isPreviousNumeric = false;
         displayText(text);
         signOperator = '0';
@@ -37,24 +47,26 @@ public class MyActionListener implements ActionListener {
     private void changeTextResult(double result) {      // if result is double sets text as double format number, if not - displays int format
         if (checkIfDouble(result)) {
             text = String.valueOf(df.format(result));
+            rememberedText = text;
         } else {
             text = String.valueOf((int) result);
+            rememberedText = text;
         }
     }
 
     private void displayText(String text) {             // displays result on calculator screen
-        Calculator.textField.setText(text);
+        calculator.textField.setText(text);
     }
 
     private void disableOperationButtons() {
         for (int i = 0; i < 4; i++) {
-            Calculator.jButtonTable[i][3].setEnabled(false);
+            calculator.jButtonTable[i][3].setEnabled(false);
         }
     }
 
     private void enableOperationButtons() {
         for (int i = 0; i < 4; i++) {
-            Calculator.jButtonTable[i][3].setEnabled(true);
+            calculator.jButtonTable[i][3].setEnabled(true);
         }
     }
 
@@ -120,15 +132,15 @@ public class MyActionListener implements ActionListener {
         argument = 0;
     }
 
-    public void actionPerformed(ActionEvent arg0) {        // main handling events function body
-        char pressed = arg0.getActionCommand().charAt(0);
-        enableOperationButtons();
+    void onClick(char pressed) {
         if (Character.isDigit(pressed)) {
             if (!text.equals("0")) {
                 text += String.valueOf(pressed);
+                rememberedText = text;
                 displayText(text);
             } else {
                 text = String.valueOf(pressed);
+                rememberedText = text;
                 displayText(text);
             }
         }
@@ -136,21 +148,25 @@ public class MyActionListener implements ActionListener {
             case '+':
                 concat(pressed);
                 text = "";
+                rememberedText = text;
                 settingsSignOperators(pressed);
                 break;
             case '-':
                 concat(pressed);
                 text = "";
+                rememberedText = text;
                 settingsSignOperators(pressed);
                 break;
             case '*':
                 concat(pressed);
                 text = "";
+                rememberedText = text;
                 settingsSignOperators(pressed);
                 break;
             case '/':
                 concat(pressed);
                 text = "";
+                rememberedText = text;
                 settingsSignOperators(pressed);
                 break;
             case 'C':
@@ -177,6 +193,7 @@ public class MyActionListener implements ActionListener {
                     rememberedArgument = argument;
                     result = argument;
                     text = String.valueOf((int) result);
+                    rememberedText = text;
                     displayText(text);
                 } else if (argument != 0) {
                     argument = Integer.parseInt(String.valueOf(argument) + String.valueOf(pressed));
@@ -188,24 +205,33 @@ public class MyActionListener implements ActionListener {
                     try {
                         argument = Integer.parseInt(String.valueOf(pressed));
                         if (argument == 0 && signOperator == '/') {
-                            if (result == 0) throw new UnspecifiedValueException("Unspecified Value.");
+                            if (result == 0) throw new UnspecifiedValueException("Unspecified value.");
                             throw new DivisionByZeroException("Division by zero!");
                         }
                     } catch (UnspecifiedValueException ue) {
                         disableOperationButtons();
                         setDefaults();
                         displayText(ue.getText());
+                        rememberedText = ue.getText();
                         text = "";
                     } catch (DivisionByZeroException de) {
                         disableOperationButtons();
                         setDefaults();
                         displayText(de.getText());
+                        rememberedText = de.getText();
+
                         text = "";
                     }
                     rememberedArgument = argument;
                 }
                 break;
         }
+    }
+
+    public void actionPerformed(ActionEvent arg0) {        // main handling events function body
+        char pressed = arg0.getActionCommand().charAt(0);
+        enableOperationButtons();
+        onClick(pressed);
     }
 
 }

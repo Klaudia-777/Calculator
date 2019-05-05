@@ -4,11 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Calculator {
-    private static final MyActionListener myActionListener = new MyActionListener();
-    static JTextField textField = new JTextField();
-    static final JButton[][] jButtonTable = new JButton[4][4];
+    private final MyActionListener myActionListener = new MyActionListener(this);
+    JTextField textField = new JTextField();
+    final JButton[][] jButtonTable = new JButton[4][4];
 
-    private static void setButtons() {
+    private void setButtons() {
 
         jButtonTable[0][0] = new JButton("1");
         jButtonTable[0][1] = new JButton("2");
@@ -32,7 +32,7 @@ public class Calculator {
 
     }
 
-    private static void setPane(Container pane) {
+    private void setPane(Container pane) {
         setButtons();
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
@@ -42,7 +42,7 @@ public class Calculator {
         }
     }
 
-    private static void createAndShowGUI() {                                        //  init view
+    public Calculator() {                                        //  init view
 
         JFrame jf = new JFrame("Calculator");
         textField.addActionListener(myActionListener);
@@ -75,13 +75,7 @@ public class Calculator {
     }
 
 
-    public static void main(String[] args) {                                        //    main function of the app
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                createAndShowGUI();
-            }
-        });
+    public static void main(String[] args) {
+        javax.swing.SwingUtilities.invokeLater(Calculator::new);
     }
-
-
 }
